@@ -1,0 +1,4 @@
+<resources>
+    <!-- Base application theme for dark mode. -->
+    <style name="Theme.ExpenseTracker" parent="android:Theme.Material.NoActionBar" />
+</resources>
