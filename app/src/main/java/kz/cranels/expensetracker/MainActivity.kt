@@ -9,6 +9,7 @@ import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -39,6 +40,7 @@ import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
@@ -179,11 +181,32 @@ fun ExpenseScreen(
             TopAppBar(
                 title = {  },
                 actions = {
-                    IconButton(onClick = {}) {
-                        Icon(Icons.Filled.DateRange, contentDescription = "Date")
+                    TextButton(
+                        onClick = {},
+                        shape = RoundedCornerShape(16.dp),
+                        modifier = Modifier
+                            .height(40.dp)
+                            .border(
+                                width = 1.dp,
+                                color = MaterialTheme.colorScheme.outline,
+                                shape = RoundedCornerShape(16.dp)
+                            )
+                    ) {
+                        Text(dateFormatter.format(selectedDate))
                     }
-                    IconButton(onClick = {}) {
-                        Text("Category")
+                    TextButton(
+                        onClick = { /* Does nothing for now */ },
+                        shape = RoundedCornerShape(16.dp), // Same shape as the date button
+                        modifier = Modifier
+                            .height(40.dp) // Same height
+                            .border(
+                                width = 1.dp,
+                                color = MaterialTheme.colorScheme.outline,
+                                shape = RoundedCornerShape(16.dp)
+                            )
+                    ) {
+                        // We'll use the selectedCategory name, or "Category" as a default
+                        Text(selectedCategory?.name ?: "Category")
                     }
                     IconButton(onClick = { navController.navigate("settings_screen") }) {
                         Icon(Icons.Filled.Settings, contentDescription = "Settings")
