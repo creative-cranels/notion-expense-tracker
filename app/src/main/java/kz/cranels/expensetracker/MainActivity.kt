@@ -177,8 +177,14 @@ fun ExpenseScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Expense Tracker") },
+                title = {  },
                 actions = {
+                    IconButton(onClick = {}) {
+                        Icon(Icons.Filled.DateRange, contentDescription = "Date")
+                    }
+                    IconButton(onClick = {}) {
+                        Text("Category")
+                    }
                     IconButton(onClick = { navController.navigate("settings_screen") }) {
                         Icon(Icons.Filled.Settings, contentDescription = "Settings")
                     }
