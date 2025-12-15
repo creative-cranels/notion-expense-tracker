@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -221,9 +222,10 @@ fun ExpenseScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(16.dp)
-                        .height(56.dp)
+                        .height(56.dp),
+                    shape = RoundedCornerShape(8.dp)
                 ) {
-                    Text("Save Expense")
+                    Text("Save Expense", style = MaterialTheme.typography.displayMedium)
                 }
             }
         }
