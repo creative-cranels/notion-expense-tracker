@@ -14,6 +14,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -51,6 +52,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -181,35 +183,43 @@ fun ExpenseScreen(
             TopAppBar(
                 title = {  },
                 actions = {
-                    TextButton(
-                        onClick = {},
-                        shape = RoundedCornerShape(16.dp),
-                        modifier = Modifier
-                            .height(40.dp)
-                            .border(
-                                width = 1.dp,
-                                color = MaterialTheme.colorScheme.outline,
-                                shape = RoundedCornerShape(16.dp)
-                            )
+                    Row(
+                        modifier = Modifier.padding(horizontal = 16.dp),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Text(dateFormatter.format(selectedDate))
-                    }
-                    TextButton(
-                        onClick = { /* Does nothing for now */ },
-                        shape = RoundedCornerShape(16.dp), // Same shape as the date button
-                        modifier = Modifier
-                            .height(40.dp) // Same height
-                            .border(
-                                width = 1.dp,
-                                color = MaterialTheme.colorScheme.outline,
-                                shape = RoundedCornerShape(16.dp)
-                            )
-                    ) {
-                        // We'll use the selectedCategory name, or "Category" as a default
-                        Text(selectedCategory?.name ?: "Category")
-                    }
-                    IconButton(onClick = { navController.navigate("settings_screen") }) {
-                        Icon(Icons.Filled.Settings, contentDescription = "Settings")
+                        TextButton(
+                            onClick = {},
+                            shape = RoundedCornerShape(16.dp),
+                            modifier = Modifier
+                                .weight(1f)
+                                .height(40.dp)
+                                .border(
+                                    width = 1.dp,
+                                    color = MaterialTheme.colorScheme.outline,
+                                    shape = RoundedCornerShape(16.dp)
+                                )
+                        ) {
+                            Text(dateFormatter.format(selectedDate))
+                        }
+                        TextButton(
+                            onClick = { /* Does nothing for now */ },
+                            shape = RoundedCornerShape(16.dp), // Same shape as the date button
+                            modifier = Modifier
+                                .weight(1f)
+                                .height(40.dp) // Same height
+                                .border(
+                                    width = 1.dp,
+                                    color = MaterialTheme.colorScheme.outline,
+                                    shape = RoundedCornerShape(16.dp)
+                                )
+                        ) {
+                            // We'll use the selectedCategory name, or "Category" as a default
+                            Text(selectedCategory?.name ?: "Category")
+                        }
+                        IconButton(onClick = { navController.navigate("settings_screen") }) {
+                            Icon(Icons.Filled.Settings, contentDescription = "Settings")
+                        }
                     }
                 }
             )
