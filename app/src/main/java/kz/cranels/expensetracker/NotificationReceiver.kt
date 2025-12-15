@@ -12,6 +12,10 @@ import androidx.core.app.NotificationCompat
 class NotificationReceiver : BroadcastReceiver() {
 
     override fun onReceive(context: Context, intent: Intent) {
+        showNotification(context)
+    }
+
+    private fun showNotification(context: Context) {
         val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -30,11 +34,16 @@ class NotificationReceiver : BroadcastReceiver() {
         }
         val pendingIntent: PendingIntent = PendingIntent.getActivity(context, 0, openAppIntent, PendingIntent.FLAG_IMMUTABLE)
 
+        // Get the list of messages and pick one at random
+        val messages = context.resources.getStringArray(R.array.passive_aggressive_reminders)
+        val randomMessage = messages.random()
+
         val builder = NotificationCompat.Builder(context, "expense_reminder_channel")
-            .setSmallIcon(R.drawable.ic_launcher_foreground) // Using our app icon
+            .setSmallIcon(R.drawable.ic_launcher_foreground)
             .setContentTitle("Did You Forget Something?")
-            .setContentText("Your wallet is crying. Open the app and track your expenses NOW.")
+            .setContentText(randomMessage)
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+            .setStyle(NotificationCompat.BigTextStyle().bigText(randomMessage)) // Ensure longer messages are readable
             .setContentIntent(pendingIntent)
             .setAutoCancel(true)
 
