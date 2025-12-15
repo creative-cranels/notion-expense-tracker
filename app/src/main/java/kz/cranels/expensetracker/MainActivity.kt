@@ -193,21 +193,24 @@ fun ExpenseScreen(
                             shape = RoundedCornerShape(16.dp),
                             modifier = Modifier
                                 .weight(1f)
-                                .height(40.dp)
+                                .height(48.dp)
                                 .border(
                                     width = 1.dp,
                                     color = MaterialTheme.colorScheme.outline,
                                     shape = RoundedCornerShape(16.dp)
                                 )
                         ) {
-                            Text(dateFormatter.format(selectedDate))
+                            Text(
+                                dateFormatter.format(selectedDate),
+                                style = MaterialTheme.typography.bodyLarge
+                            )
                         }
                         TextButton(
                             onClick = { /* Does nothing for now */ },
                             shape = RoundedCornerShape(16.dp), // Same shape as the date button
                             modifier = Modifier
                                 .weight(1f)
-                                .height(40.dp) // Same height
+                                .height(48.dp) // Same height
                                 .border(
                                     width = 1.dp,
                                     color = MaterialTheme.colorScheme.outline,
@@ -215,7 +218,10 @@ fun ExpenseScreen(
                                 )
                         ) {
                             // We'll use the selectedCategory name, or "Category" as a default
-                            Text(selectedCategory?.name ?: "Category")
+                            Text(
+                                selectedCategory?.name ?: "Category",
+                                style = MaterialTheme.typography.bodyLarge
+                            )
                         }
                         IconButton(onClick = { navController.navigate("settings_screen") }) {
                             Icon(Icons.Filled.Settings, contentDescription = "Settings")
