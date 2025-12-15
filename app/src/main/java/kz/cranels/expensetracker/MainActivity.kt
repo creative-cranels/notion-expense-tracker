@@ -15,6 +15,8 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -181,12 +183,55 @@ fun ExpenseScreen(
                     }
                 }
             )
+        },
+        bottomBar = {
+            Surface(
+                modifier = Modifier.navigationBarsPadding()
+            ) {
+                Button(
+                    onClick = {
+                        val token = sharedPrefs.getString("integration_secret", null)
+                        val dbId = sharedPrefs.getString("database_id", null)
+                        if (token == null || dbId == null) {
+                            Toast.makeText(context, "Please set credentials in settings", Toast.LENGTH_SHORT).show()
+                            return@Button
+                        }
+                        if (amount.isBlank() || description.isBlank()) {
+                            Toast.makeText(context, "Please enter amount and description", Toast.LENGTH_SHORT).show()
+                            return@Button
+                        }
+                        if (selectedCategory == null) {
+                            Toast.makeText(context, "Please select a category", Toast.LENGTH_SHORT).show()
+                            return@Button
+                        }
+
+                        viewModel.saveExpense(token, dbId, description, amount, selectedCategory!!.id, selectedDate) { success ->
+                            if (success) {
+                                Toast.makeText(context, "Expense Saved!", Toast.LENGTH_SHORT).show()
+                                amount = ""
+                                description = ""
+                                selectedCategory = null
+                                selectedDate = Date()
+                            } else {
+                                Toast.makeText(context, "Error saving expense", Toast.LENGTH_SHORT).show()
+                            }
+                        }
+                    },
+                    enabled = !isSaving,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp)
+                        .height(56.dp)
+                ) {
+                    Text("Save Expense")
+                }
+            }
         }
     ) { innerPadding ->
         Column(
             modifier = modifier
                 .padding(innerPadding)
-                .padding(16.dp)
+                .padding(horizontal = 16.dp)
                 .fillMaxSize(),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
@@ -264,37 +309,6 @@ fun ExpenseScreen(
                         )
                     }
                 }
-            }
-
-            Button(
-                onClick = {
-                    val token = sharedPrefs.getString("integration_secret", null)
-                    val dbId = sharedPrefs.getString("database_id", null)
-                    if (token == null || dbId == null) {
-                        Toast.makeText(context, "Please set credentials in settings", Toast.LENGTH_SHORT).show()
-                        return@Button
-                    }
-                    if (selectedCategory == null) {
-                        Toast.makeText(context, "Please select a category", Toast.LENGTH_SHORT).show()
-                        return@Button
-                    }
-
-                    viewModel.saveExpense(token, dbId, description, amount, selectedCategory!!.id, selectedDate) { success ->
-                        if (success) {
-                            Toast.makeText(context, "Expense Saved!", Toast.LENGTH_SHORT).show()
-                            amount = ""
-                            description = ""
-                            selectedCategory = null
-                            selectedDate = Date()
-                        } else {
-                            Toast.makeText(context, "Error saving expense", Toast.LENGTH_SHORT).show()
-                        }
-                    }
-                },
-                enabled = !isSaving,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text("Save Expense")
             }
         }
     }

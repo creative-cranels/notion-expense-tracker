@@ -10,13 +10,17 @@ import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
 
 private val LightColorScheme = lightColorScheme(
-    primary = PrimaryBlue,
-    onPrimary = OnPrimary,
-    background = Background,
-    onBackground = OnBackground,
-    surface = Surface,
-    onSurface = OnSurface,
-    outline = Outline
+    primary = Primary600,
+    onPrimary = White,
+    primaryContainer = Primary50,
+    onPrimaryContainer = Primary700,
+    background = Gray50, // Using a light gray for the main background
+    onBackground = Gray900,
+    surface = Gray50, // Set surface to the same light gray for a unified look
+    onSurface = Gray900,
+    surfaceVariant = White, // Use white for cards, text fields, etc.
+    onSurfaceVariant = Gray700,
+    outline = Gray300
 )
 
 @Composable
@@ -28,8 +32,8 @@ fun ExpenseTrackerTheme(
     if (!view.isInEditMode) {
         SideEffect {
             val window = (view.context as Activity).window
-            window.statusBarColor = colorScheme.primary.toArgb()
-            WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = false
+            window.statusBarColor = colorScheme.surface.toArgb()
+            WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = true
         }
     }
 

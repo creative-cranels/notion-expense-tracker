@@ -2,20 +2,25 @@ package kz.cranels.expensetracker.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
-// Light Theme Colors
-val PrimaryBlue = Color(0xFF007BFF)
-val OnPrimary = Color.White
-val Background = Color(0xFFF7F9FC)
-val OnBackground = Color(0xFF1C1C1E)
-val Surface = Color.White
-val OnSurface = Color(0xFF1C1C1E)
-val Outline = Color(0xFFD0D0D0)
+// Untitled UI Palette
 
-// Dark Theme Colors (for completeness)
-val DarkPrimary = Color(0xFF409CFF)
-val DarkOnPrimary = Color(0xFF003366)
-val DarkBackground = Color(0xFF121212)
-val DarkOnBackground = Color(0xFFE0E0E0)
-val DarkSurface = Color(0xFF1E1E1E)
-val DarkOnSurface = Color(0xFFE0E0E0)
-val DarkOutline = Color(0xFF444444)
+// Primary
+val Primary50 = Color(0xFFF0F9FF)
+val Primary100 = Color(0xFFE0F2FE)
+val Primary600 = Color(0xFF026AA2)
+val Primary700 = Color(0xFF025277)
+
+// Gray
+val Gray25 = Color(0xFFFCFCFD)
+val Gray50 = Color(0xFFF8F9FC)
+val Gray100 = Color(0xFFF2F4F7)
+val Gray200 = Color(0xFFEAECF0)
+val Gray300 = Color(0xFFD0D5DD)
+val Gray400 = Color(0xFF98A2B3)
+val Gray500 = Color(0xFF667085)
+val Gray700 = Color(0xFF344054)
+val Gray900 = Color(0xFF101828)
+
+// Base
+val White = Color(0xFFFFFFFF)
+val Black = Color(0xFF000000)
