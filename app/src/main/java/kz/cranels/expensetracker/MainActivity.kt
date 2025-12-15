@@ -2,7 +2,6 @@ package kz.cranels.expensetracker
 
 import android.Manifest
 import android.app.Application
-import android.app.DatePickerDialog
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
@@ -23,6 +22,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Button
+import androidx.compose.material3.DatePicker
+import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
@@ -36,12 +37,15 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -58,12 +62,13 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import kotlinx.coroutines.flow.drop
 import kz.cranels.expensetracker.data.local.Category
 import kz.cranels.expensetracker.ui.theme.ExpenseTrackerTheme
 import java.text.SimpleDateFormat
-import java.util.Calendar
 import java.util.Date
 import java.util.Locale
+import java.util.TimeZone
 
 class MainActivity : ComponentActivity() {
 
@@ -73,11 +78,7 @@ class MainActivity : ComponentActivity() {
         if (isGranted) {
             // Permission is granted. You can now schedule notifications.
         } else {
-            // Explain to the user that the feature is unavailable because the
-            // features requires a permission that the user has denied. At the
-            // same time, respect the user's decision. Don't link to system
-            // settings in an effort to convince the user to change their
-            // decision.
+            // Explain to the user that the feature is unavailable
         }
     }
 
@@ -140,22 +141,35 @@ fun ExpenseScreen(
     var isCategoryDropdownExpanded by remember { mutableStateOf(false) }
     val isSaving by viewModel.isSaving.collectAsState()
 
-    val dateFormatter = remember { SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()) }
-    var selectedDate by remember { mutableStateOf(Date()) }
-
-    val calendar = Calendar.getInstance().apply {
-        time = selectedDate
+    val dateFormatter = remember {
+        SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).apply {
+            timeZone = TimeZone.getTimeZone("UTC")
+        }
     }
-    val datePickerDialog = DatePickerDialog(
-        context,
-        { _, year, month, dayOfMonth ->
-            calendar.set(year, month, dayOfMonth)
-            selectedDate = calendar.time
-        },
-        calendar.get(Calendar.YEAR),
-        calendar.get(Calendar.MONTH),
-        calendar.get(Calendar.DAY_OF_MONTH)
-    )
+    var selectedDate by remember { mutableStateOf(Date()) }
+    var showDatePicker by remember { mutableStateOf(false) }
+
+    if (showDatePicker) {
+        val datePickerState = rememberDatePickerState(initialSelectedDateMillis = selectedDate.time)
+
+        LaunchedEffect(datePickerState) {
+            snapshotFlow { datePickerState.selectedDateMillis }
+                .drop(1) // Ignore the initial null value
+                .collect { millis ->
+                    millis?.let {
+                        selectedDate = Date(it)
+                        showDatePicker = false
+                    }
+                }
+        }
+
+        DatePickerDialog(
+            onDismissRequest = { showDatePicker = false },
+            confirmButton = { /* Empty to hide the button */ }
+        ) {
+            DatePicker(state = datePickerState)
+        }
+    }
 
     Scaffold(
         topBar = {
@@ -203,7 +217,7 @@ fun ExpenseScreen(
                     value = dateFormatter.format(selectedDate),
                     onValueChange = {},
                     label = { Text("Date") },
-                    enabled = false, // Disable text field to prevent focus
+                    enabled = false,
                     trailingIcon = { Icon(Icons.Default.DateRange, contentDescription = "Select Date") },
                     colors = OutlinedTextFieldDefaults.colors(
                         disabledTextColor = MaterialTheme.colorScheme.onSurface,
@@ -217,7 +231,7 @@ fun ExpenseScreen(
                     modifier = Modifier
                         .matchParentSize()
                         .alpha(0f)
-                        .clickable(enabled = !isSaving) { datePickerDialog.show() }
+                        .clickable(enabled = !isSaving) { showDatePicker = true }
                 )
             }
 
@@ -271,7 +285,7 @@ fun ExpenseScreen(
                             amount = ""
                             description = ""
                             selectedCategory = null
-                            selectedDate = Date() // Reset to today
+                            selectedDate = Date()
                         } else {
                             Toast.makeText(context, "Error saving expense", Toast.LENGTH_SHORT).show()
                         }

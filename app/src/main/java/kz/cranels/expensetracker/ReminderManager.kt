@@ -8,16 +8,29 @@ import java.util.Calendar
 
 object ReminderManager {
 
+    private const val REMINDER_REQUEST_CODE = 123
+
     fun scheduleReminder(context: Context, hour: Int, minute: Int) {
         val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-        val intent = Intent(context, NotificationReceiver::class.java)
-        val pendingIntent = PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_IMMUTABLE)
+        val intent = Intent(context, NotificationReceiver::class.java).apply {
+            // Add the time to the intent so we can reschedule it later
+            putExtra("hour", hour)
+            putExtra("minute", minute)
+        }
+
+        val pendingIntent = PendingIntent.getBroadcast(
+            context, 
+            REMINDER_REQUEST_CODE, 
+            intent, 
+            PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+        )
 
         val calendar = Calendar.getInstance().apply {
             timeInMillis = System.currentTimeMillis()
             set(Calendar.HOUR_OF_DAY, hour)
             set(Calendar.MINUTE, minute)
             set(Calendar.SECOND, 0)
+            set(Calendar.MILLISECOND, 0)
         }
 
         // If the time has already passed for today, schedule it for tomorrow
@@ -25,10 +38,10 @@ object ReminderManager {
             calendar.add(Calendar.DAY_OF_YEAR, 1)
         }
 
-        alarmManager.setInexactRepeating(
+        // Use setExactAndAllowWhileIdle for precision
+        alarmManager.setExactAndAllowWhileIdle(
             AlarmManager.RTC_WAKEUP,
             calendar.timeInMillis,
-            AlarmManager.INTERVAL_DAY,
             pendingIntent
         )
     }
@@ -36,7 +49,14 @@ object ReminderManager {
     fun cancelReminder(context: Context) {
         val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
         val intent = Intent(context, NotificationReceiver::class.java)
-        val pendingIntent = PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_IMMUTABLE)
-        alarmManager.cancel(pendingIntent)
+        val pendingIntent = PendingIntent.getBroadcast(
+            context, 
+            REMINDER_REQUEST_CODE, 
+            intent, 
+            PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_NO_CREATE
+        )
+        if (pendingIntent != null) {
+            alarmManager.cancel(pendingIntent)
+        }
     }
 }
