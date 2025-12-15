@@ -4,6 +4,8 @@ import android.app.AlarmManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import android.os.Build
+import androidx.core.content.ContextCompat
 import java.util.Calendar
 
 object ReminderManager {
@@ -13,7 +15,6 @@ object ReminderManager {
     fun scheduleReminder(context: Context, hour: Int, minute: Int) {
         val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
         val intent = Intent(context, NotificationReceiver::class.java).apply {
-            // Add the time to the intent so we can reschedule it later
             putExtra("hour", hour)
             putExtra("minute", minute)
         }
@@ -33,17 +34,25 @@ object ReminderManager {
             set(Calendar.MILLISECOND, 0)
         }
 
-        // If the time has already passed for today, schedule it for tomorrow
         if (calendar.timeInMillis <= System.currentTimeMillis()) {
             calendar.add(Calendar.DAY_OF_YEAR, 1)
         }
 
-        // Use setExactAndAllowWhileIdle for precision
-        alarmManager.setExactAndAllowWhileIdle(
-            AlarmManager.RTC_WAKEUP,
-            calendar.timeInMillis,
-            pendingIntent
-        )
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && alarmManager.canScheduleExactAlarms()) {
+            alarmManager.setExactAndAllowWhileIdle(
+                AlarmManager.RTC_WAKEUP,
+                calendar.timeInMillis,
+                pendingIntent
+            )
+        } else {
+            // Fallback for older devices or if permission is denied
+            alarmManager.setInexactRepeating(
+                AlarmManager.RTC_WAKEUP,
+                calendar.timeInMillis,
+                AlarmManager.INTERVAL_DAY,
+                pendingIntent
+            )
+        }
     }
 
     fun cancelReminder(context: Context) {
