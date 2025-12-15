@@ -2,6 +2,13 @@ package kz.cranels.expensetracker.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
+// Custom Color Palette
+val CustomPrimaryTeal = Color(0xFF70A288)
+val CustomBackgroundWhite = Color(0xFFFFFFFF)
+val CustomSurfaceGreen = Color(0xFF19381F)
+val CustomTextViolet = Color(0xFF19381F)
+val CustomOutlineMauve = Color(0xFF847996)
+
 // Untitled UI Palette
 
 // Primary
