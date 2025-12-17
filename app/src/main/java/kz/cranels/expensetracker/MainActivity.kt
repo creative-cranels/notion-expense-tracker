@@ -27,9 +27,11 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Backspace
 import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.DropdownMenuItem
@@ -38,6 +40,7 @@ import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
@@ -257,50 +260,6 @@ fun ExpenseScreen(
                     }
                 }
             )
-        },
-        bottomBar = {
-            Surface(
-                modifier = Modifier.navigationBarsPadding()
-            ) {
-                Button(
-                    onClick = {
-                        val token = sharedPrefs.getString("integration_secret", null)
-                        val dbId = sharedPrefs.getString("database_id", null)
-                        if (token == null || dbId == null) {
-                            Toast.makeText(context, "Please set credentials in settings", Toast.LENGTH_SHORT).show()
-                            return@Button
-                        }
-                        if (amount.isBlank() || description.isBlank()) {
-                            Toast.makeText(context, "Please enter amount and description", Toast.LENGTH_SHORT).show()
-                            return@Button
-                        }
-                        if (selectedCategory == null) {
-                            Toast.makeText(context, "Please select a category", Toast.LENGTH_SHORT).show()
-                            return@Button
-                        }
-
-                        viewModel.saveExpense(token, dbId, description, amount, selectedCategory!!.id, selectedDate) { success ->
-                            if (success) {
-                                Toast.makeText(context, "Expense Saved!", Toast.LENGTH_SHORT).show()
-                                amount = ""
-                                description = ""
-                                selectedCategory = null
-                                selectedDate = Date()
-                            } else {
-                                Toast.makeText(context, "Error saving expense", Toast.LENGTH_SHORT).show()
-                            }
-                        }
-                    },
-                    enabled = !isSaving,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp)
-                        .height(56.dp),
-                    shape = RoundedCornerShape(8.dp)
-                ) {
-                    Text("Save Expense", style = MaterialTheme.typography.displayMedium)
-                }
-            }
         }
     ) { innerPadding ->
         Column(
@@ -333,54 +292,160 @@ fun ExpenseScreen(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    TextButton(onClick = { /* No-op */ }, modifier = Modifier.weight(1f)) {
-                        Text("1")
+                    Button(
+                        onClick = { /* No-op */ },
+                        modifier = Modifier
+                            .weight(1f)
+                            .height(80.dp),
+                        shape = RoundedCornerShape(24.dp),
+                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
+                        ) {
+                        Text("1", style = MaterialTheme.typography.headlineMedium)
                     }
-                    TextButton(onClick = { /* No-op */ }, modifier = Modifier.weight(1f)) {
-                        Text("2")
+                    Button(
+                        onClick = { /* No-op */ },
+                        modifier = Modifier
+                            .weight(1f)
+                            .height(80.dp),
+                        shape = RoundedCornerShape(24.dp),
+                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
+                    ) {
+                        Text("2", style = MaterialTheme.typography.headlineMedium)
                     }
-                    TextButton(onClick = { /* No-op */ }, modifier = Modifier.weight(1f)) {
-                        Text("3")
+                    Button(
+                        onClick = { /* No-op */ },
+                        modifier = Modifier
+                            .weight(1f)
+                            .height(80.dp),
+                        shape = RoundedCornerShape(24.dp),
+                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
+                    ) {
+                        Text("3", style = MaterialTheme.typography.headlineMedium)
+                    }
+                    IconButton(
+                        onClick = { /* No-op */ },
+                        modifier = Modifier
+                            .weight(1f)
+                            .height(80.dp),
+                        shape = RoundedCornerShape(24.dp),
+                        colors = IconButtonDefaults.iconButtonColors(containerColor = MaterialTheme.colorScheme.surfaceVariant) // <-- The correct defaults object
+                    ) {
+                        Icon(Icons.AutoMirrored.Filled.Backspace, contentDescription = "Backspace")
                     }
                 }
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    TextButton(onClick = { /* No-op */ }, modifier = Modifier.weight(1f)) {
-                        Text("4")
+                    Button(
+                        onClick = { /* No-op */ },
+                        modifier = Modifier
+                            .weight(1f)
+                            .height(80.dp),
+                        shape = RoundedCornerShape(24.dp),
+                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
+                    ) {
+                        Text("4", style = MaterialTheme.typography.headlineMedium)
                     }
-                    TextButton(onClick = { /* No-op */ }, modifier = Modifier.weight(1f)) {
-                        Text("5")
+                    Button(
+                        onClick = { /* No-op */ },
+                        modifier = Modifier
+                            .weight(1f)
+                            .height(80.dp),
+                        shape = RoundedCornerShape(24.dp),
+                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
+                    ) {
+                        Text("5", style = MaterialTheme.typography.headlineMedium)
                     }
-                    TextButton(onClick = { /* No-op */ }, modifier = Modifier.weight(1f)) {
-                        Text("6")
+                    Button(
+                        onClick = { /* No-op */ },
+                        modifier = Modifier
+                            .weight(1f)
+                            .height(80.dp),
+                        shape = RoundedCornerShape(24.dp),
+                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
+                    ) {
+                        Text("6", style = MaterialTheme.typography.headlineMedium)
+                    }
+                    IconButton(
+                        onClick = { /* No-op */ },
+                        modifier = Modifier
+                            .weight(1f)
+                            .height(80.dp),
+                        shape = RoundedCornerShape(24.dp),
+                        colors = IconButtonDefaults.iconButtonColors(containerColor = MaterialTheme.colorScheme.surfaceVariant) // <-- The correct defaults object
+                    ) {
+                        Icon(Icons.Default.DateRange, contentDescription = "DateRange")
                     }
                 }
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    TextButton(onClick = { /* No-op */ }, modifier = Modifier.weight(1f)) {
-                        Text("7")
+                    Column(
+                        modifier = Modifier.weight(3f), // Takes up 3/4 of the space
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            Button(onClick={/*No-op*/},modifier=Modifier
+                                .weight(1f)
+                                .height(80.dp),shape=RoundedCornerShape(24.dp),colors=ButtonDefaults.buttonColors(containerColor=MaterialTheme.colorScheme.surfaceVariant)){Text("7",style=MaterialTheme.typography.headlineMedium)}
+                            Button(onClick={/*No-op*/},modifier=Modifier
+                                .weight(1f)
+                                .height(80.dp),shape=RoundedCornerShape(24.dp),colors=ButtonDefaults.buttonColors(containerColor=MaterialTheme.colorScheme.surfaceVariant)){Text("8",style=MaterialTheme.typography.headlineMedium)}
+                            Button(onClick={/*No-op*/},modifier=Modifier
+                                .weight(1f)
+                                .height(80.dp),shape=RoundedCornerShape(24.dp),colors=ButtonDefaults.buttonColors(containerColor=MaterialTheme.colorScheme.surfaceVariant)){Text("9",style=MaterialTheme.typography.headlineMedium)}
+                        }
+                        // The new "0" button goes below
+                        Row( modifier = Modifier.fillMaxWidth() ) {
+                            Button(onClick={/*No-op*/},modifier=Modifier
+                                .fillMaxWidth()
+                                .height(80.dp),shape=RoundedCornerShape(24.dp),colors=ButtonDefaults.buttonColors(containerColor=MaterialTheme.colorScheme.surfaceVariant)){Text("0",style=MaterialTheme.typography.headlineMedium)}
+                        }
                     }
-                    TextButton(onClick = { /* No-op */ }, modifier = Modifier.weight(1f)) {
-                        Text("8")
-                    }
-                    TextButton(onClick = { /* No-op */ }, modifier = Modifier.weight(1f)) {
-                        Text("9")
+                    Button(
+                        onClick = {
+                            val token = sharedPrefs.getString("integration_secret", null)
+                            val dbId = sharedPrefs.getString("database_id", null)
+                            if (token == null || dbId == null) {
+                                Toast.makeText(context, "Please set credentials in settings", Toast.LENGTH_SHORT).show()
+                                return@Button
+                            }
+                            if (amount.isBlank() || description.isBlank()) {
+                                Toast.makeText(context, "Please enter amount and description", Toast.LENGTH_SHORT).show()
+                                return@Button
+                            }
+                            if (selectedCategory == null) {
+                                Toast.makeText(context, "Please select a category", Toast.LENGTH_SHORT).show()
+                                return@Button
+                            }
+
+                            viewModel.saveExpense(token, dbId, description, amount, selectedCategory!!.id, selectedDate) { success ->
+                                if (success) {
+                                    Toast.makeText(context, "Expense Saved!", Toast.LENGTH_SHORT).show()
+                                    amount = ""
+                                    description = ""
+                                    selectedCategory = null
+                                    selectedDate = Date()
+                                } else {
+                                    Toast.makeText(context, "Error saving expense", Toast.LENGTH_SHORT).show()
+                                }
+                            }
+                        },
+                        enabled = !isSaving,
+                        modifier = Modifier
+                            .weight(1f) // Takes up the last 1/4 of the space
+                            .height(168.dp), // Spans two rows (80dp + 8dp space + 80dp)
+                        shape = RoundedCornerShape(24.dp),
+                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
+                    ) {
+                        Icon(Icons.Default.Check, contentDescription = "Save")
                     }
                 }
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                TextButton(onClick = { /* No-op */ }, modifier = Modifier.weight(1f)) { Text(".") }
-                TextButton(onClick = { /* No-op */ }, modifier = Modifier.weight(1f)) { Text("0") }
-                IconButton(onClick = { /* No-op */ }, modifier = Modifier.weight(1f)) {
-                    Icon(Icons.AutoMirrored.Filled.Backspace, contentDescription = "Backspace")
-                }
-            }
             }
         }
     }
