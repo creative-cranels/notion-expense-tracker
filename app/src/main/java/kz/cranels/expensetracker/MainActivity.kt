@@ -35,6 +35,7 @@ import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.Style
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DatePicker
@@ -72,10 +73,13 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
@@ -92,6 +96,8 @@ import kz.cranels.expensetracker.ui.theme.CategoryColorContent
 import kz.cranels.expensetracker.ui.theme.CustomBackgroundWhite
 import kz.cranels.expensetracker.ui.theme.CustomPrimaryTeal
 import kz.cranels.expensetracker.ui.theme.ExpenseTrackerTheme
+import kz.cranels.expensetracker.ui.theme.Gray400
+import kz.cranels.expensetracker.ui.theme.Gray500
 import kz.cranels.expensetracker.ui.theme.KeypadDelete
 import kz.cranels.expensetracker.ui.theme.KeypadDeleteContent
 import kz.cranels.expensetracker.ui.theme.KeypadNormal
@@ -182,6 +188,22 @@ fun ExpenseScreen(
     var selectedDate by remember { mutableStateOf(Date()) }
     var showDatePicker by remember { mutableStateOf(false) }
 
+    val numberFormatter = remember {
+        val symbols = java.text.DecimalFormatSymbols(Locale.getDefault())
+        symbols.groupingSeparator = ' ' // Use a space for the separator
+        java.text.DecimalFormat("#,###", symbols)
+    }
+    val formattedAmount = remember(amount) {
+        // Try to convert the raw amount string to a number.
+        // If it's not a valid number (e.g., empty), just use the raw string.
+        val number = amount.toLongOrNull()
+        if (number != null) {
+            numberFormatter.format(number)
+        } else {
+            amount
+        }
+    }
+
     if (showDatePicker) {
         val datePickerState = rememberDatePickerState(initialSelectedDateMillis = selectedDate.time)
 
@@ -246,11 +268,25 @@ fun ExpenseScreen(
                                 contentColor = KeypadSpecialContent
                             )
                         ) {
-                            Text(
-                                dateFormatter.format(selectedDate),
-                                style = MaterialTheme.typography.bodyLarge
-                            )
-                            Icon(Icons.Default.ArrowDropDown, contentDescription = null)
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 10.dp), // Make this new Row fill the button
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.spacedBy(4.dp) // Space between icon and text
+                                ) {
+                                    Icon(Icons.Default.DateRange, contentDescription = null) // Add leading icon
+                                    Text(
+                                        dateFormatter.format(selectedDate),
+                                        style = MaterialTheme.typography.bodyLarge
+                                    )
+                                }
+                                Spacer(Modifier.weight(1f))
+                                Icon(Icons.Default.ArrowDropDown, contentDescription = null)
+                            }
                         }
                         ExposedDropdownMenuBox(
                             expanded = isCategoryDropdownExpanded,
@@ -269,11 +305,26 @@ fun ExpenseScreen(
                                     contentColor = CategoryColorContent
                                 )
                             ) {
-                                Row(verticalAlignment = Alignment.CenterVertically) {
-                                    Text(
-                                        selectedCategory?.name ?: "Category",
-                                        style = MaterialTheme.typography.bodyLarge
-                                    )
+                                Row(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(horizontal = 10.dp), // Add the same internal padding
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Row(
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        horizontalArrangement = Arrangement.spacedBy(4.dp)
+                                    ) {
+                                        // Let's use a generic category icon for now
+                                        Icon(Icons.Default.Style, contentDescription = null)
+                                        Text(
+                                            selectedCategory?.name ?: "Category",
+                                            style = MaterialTheme.typography.bodyLarge
+                                        )
+                                    }
+                                    Spacer(Modifier.weight(1f)) // This pushes the caret to the right
+
+                                    // The caret icon
                                     Icon(Icons.Default.ArrowDropDown, contentDescription = null)
                                 }
                             }
@@ -310,7 +361,12 @@ fun ExpenseScreen(
         ) {
             Spacer(modifier = Modifier.weight(1f))
             Text(
-                text = "₸$amount",
+                text = buildAnnotatedString {
+                    withStyle(style = SpanStyle(color = Gray400, fontSize = MaterialTheme.typography.displayLarge.fontSize / 2)) {
+                        append("₸ ")
+                    }
+                    append(formattedAmount)
+                },
                 style = MaterialTheme.typography.displayLarge,
                 fontWeight = FontWeight.SemiBold
             )
@@ -322,7 +378,7 @@ fun ExpenseScreen(
                 if (description.isBlank()) {
                     Text(
                         text = "Add description...",
-                        style = MaterialTheme.typography.bodyMedium,
+                        style = MaterialTheme.typography.bodyLarge,
                         color = MaterialTheme.colorScheme.outline // Use a subtle color
                     )
                 }
@@ -330,9 +386,10 @@ fun ExpenseScreen(
                     value = description,
                     onValueChange = { description = it },
                     modifier = Modifier.fillMaxWidth(),
-                    textStyle = MaterialTheme.typography.bodyMedium.copy(
+                    textStyle = MaterialTheme.typography.bodyLarge.copy(
                         color = MaterialTheme.colorScheme.onSurface,
-                        textAlign = TextAlign.Center
+                        textAlign = TextAlign.Center,
+                        fontWeight = FontWeight.SemiBold
                     ),
                     keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
                     keyboardActions = KeyboardActions(
