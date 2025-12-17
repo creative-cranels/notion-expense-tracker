@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -24,6 +25,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Backspace
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Settings
@@ -60,6 +62,7 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
@@ -222,7 +225,8 @@ fun ExpenseScreen(
                                         width = 1.dp,
                                         color = MaterialTheme.colorScheme.outline,
                                         shape = RoundedCornerShape(16.dp)
-                                    ).menuAnchor()
+                                    )
+                                    .menuAnchor()
                             ) {
                                 Row(verticalAlignment = Alignment.CenterVertically) {
                                     Text(
@@ -306,27 +310,78 @@ fun ExpenseScreen(
                 .fillMaxSize(),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            OutlinedTextField(
-                value = amount,
-                onValueChange = { amount = it },
-                label = { Text("Amount") },
-                enabled = !isSaving,
-                keyboardOptions = KeyboardOptions(
-                    keyboardType = KeyboardType.Number,
-                    imeAction = ImeAction.Next
-                ),
-                keyboardActions = KeyboardActions(onNext = { focusManager.moveFocus(FocusDirection.Down) }),
-                modifier = Modifier.fillMaxWidth()
+            Text(
+                text = "₸0",
+                style = MaterialTheme.typography.displayLarge,
+                fontWeight = FontWeight.SemiBold
             )
-            OutlinedTextField(
-                value = description,
-                onValueChange = { description = it },
-                label = { Text("Description") },
-                enabled = !isSaving,
-                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
-                keyboardActions = KeyboardActions(onNext = { focusManager.moveFocus(FocusDirection.Down) }),
-                modifier = Modifier.fillMaxWidth()
+            Text(
+                text = "Add description...",
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.outline
             )
+            // This pushes the keyboard to the bottom
+            Spacer(modifier = Modifier.weight(1f))
+
+            // This is the container for our keyboard
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                // First row of keys
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    TextButton(onClick = { /* No-op */ }, modifier = Modifier.weight(1f)) {
+                        Text("1")
+                    }
+                    TextButton(onClick = { /* No-op */ }, modifier = Modifier.weight(1f)) {
+                        Text("2")
+                    }
+                    TextButton(onClick = { /* No-op */ }, modifier = Modifier.weight(1f)) {
+                        Text("3")
+                    }
+                }
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    TextButton(onClick = { /* No-op */ }, modifier = Modifier.weight(1f)) {
+                        Text("4")
+                    }
+                    TextButton(onClick = { /* No-op */ }, modifier = Modifier.weight(1f)) {
+                        Text("5")
+                    }
+                    TextButton(onClick = { /* No-op */ }, modifier = Modifier.weight(1f)) {
+                        Text("6")
+                    }
+                }
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    TextButton(onClick = { /* No-op */ }, modifier = Modifier.weight(1f)) {
+                        Text("7")
+                    }
+                    TextButton(onClick = { /* No-op */ }, modifier = Modifier.weight(1f)) {
+                        Text("8")
+                    }
+                    TextButton(onClick = { /* No-op */ }, modifier = Modifier.weight(1f)) {
+                        Text("9")
+                    }
+                }
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                TextButton(onClick = { /* No-op */ }, modifier = Modifier.weight(1f)) { Text(".") }
+                TextButton(onClick = { /* No-op */ }, modifier = Modifier.weight(1f)) { Text("0") }
+                IconButton(onClick = { /* No-op */ }, modifier = Modifier.weight(1f)) {
+                    Icon(Icons.AutoMirrored.Filled.Backspace, contentDescription = "Backspace")
+                }
+            }
+            }
         }
     }
 }

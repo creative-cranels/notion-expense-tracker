@@ -13,6 +13,8 @@ class NotificationReceiver : BroadcastReceiver() {
 
     override fun onReceive(context: Context, intent: Intent) {
         showNotification(context)
+        // The incorrect rescheduling logic has been removed.
+        // The AlarmManager, using setInexactRepeating, will handle the daily repetition.
     }
 
     private fun showNotification(context: Context) {
@@ -34,7 +36,6 @@ class NotificationReceiver : BroadcastReceiver() {
         }
         val pendingIntent: PendingIntent = PendingIntent.getActivity(context, 0, openAppIntent, PendingIntent.FLAG_IMMUTABLE)
 
-        // Get the list of messages and pick one at random
         val messages = context.resources.getStringArray(R.array.passive_aggressive_reminders)
         val randomMessage = messages.random()
 
@@ -43,7 +44,7 @@ class NotificationReceiver : BroadcastReceiver() {
             .setContentTitle("Did You Forget Something?")
             .setContentText(randomMessage)
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
-            .setStyle(NotificationCompat.BigTextStyle().bigText(randomMessage)) // Ensure longer messages are readable
+            .setStyle(NotificationCompat.BigTextStyle().bigText(randomMessage))
             .setContentIntent(pendingIntent)
             .setAutoCancel(true)
 
