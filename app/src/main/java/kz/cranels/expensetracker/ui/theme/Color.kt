@@ -8,7 +8,8 @@ val KeypadDelete = Color(0xFFFEE4E2)      // A light, reddish pink for the backs
 val KeypadSpecial = Color(0xFFE0F2FE)     // A light, blueish color for the date picker
 val KeypadDeleteContent = Color(0xFFD92D20) // A darker red for the backspace icon
 val KeypadSpecialContent = Color(0xFF026AA2)// A darker blue for the date picker icon
-
+val CategoryColor = Color(0xFF8BC34A)
+val CategoryColorContent = Color(0xFFffffff)
 
 // Custom Color Palette
 val CustomPrimaryTeal = Color(0xFF70A288)

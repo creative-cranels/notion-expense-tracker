@@ -75,6 +75,7 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
@@ -86,6 +87,10 @@ import androidx.navigation.compose.rememberNavController
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.yield
 import kz.cranels.expensetracker.data.local.Category
+import kz.cranels.expensetracker.ui.theme.CategoryColor
+import kz.cranels.expensetracker.ui.theme.CategoryColorContent
+import kz.cranels.expensetracker.ui.theme.CustomBackgroundWhite
+import kz.cranels.expensetracker.ui.theme.CustomPrimaryTeal
 import kz.cranels.expensetracker.ui.theme.ExpenseTrackerTheme
 import kz.cranels.expensetracker.ui.theme.KeypadDelete
 import kz.cranels.expensetracker.ui.theme.KeypadDeleteContent
@@ -232,15 +237,14 @@ fun ExpenseScreen(
                     ) {
                         TextButton(
                             onClick = { showDatePicker = true },
-                            shape = RoundedCornerShape(16.dp),
+                            shape = RoundedCornerShape(24.dp),
                             modifier = Modifier
                                 .weight(1f)
-                                .height(48.dp)
-                                .border(
-                                    width = 1.dp,
-                                    color = MaterialTheme.colorScheme.outline,
-                                    shape = RoundedCornerShape(16.dp)
-                                )
+                                .height(48.dp),
+                            colors = ButtonDefaults.textButtonColors(
+                                containerColor = KeypadSpecial,
+                                contentColor = KeypadSpecialContent
+                            )
                         ) {
                             Text(
                                 dateFormatter.format(selectedDate),
@@ -255,16 +259,15 @@ fun ExpenseScreen(
                         ) {
                             TextButton(
                                 onClick = { isCategoryDropdownExpanded = !isCategoryDropdownExpanded },
-                                shape = RoundedCornerShape(16.dp), // Same shape as the date button
+                                shape = RoundedCornerShape(24.dp), // Same shape as the date button
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .height(48.dp)
-                                    .border(
-                                        width = 1.dp,
-                                        color = MaterialTheme.colorScheme.outline,
-                                        shape = RoundedCornerShape(16.dp)
-                                    )
-                                    .menuAnchor()
+                                    .menuAnchor(),
+                                colors = ButtonDefaults.textButtonColors(
+                                    containerColor = CustomPrimaryTeal,
+                                    contentColor = CategoryColorContent
+                                )
                             ) {
                                 Row(verticalAlignment = Alignment.CenterVertically) {
                                     Text(
@@ -302,14 +305,19 @@ fun ExpenseScreen(
                 .padding(innerPadding)
                 .padding(horizontal = 16.dp)
                 .fillMaxSize(),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+            verticalArrangement = Arrangement.spacedBy(16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
+            Spacer(modifier = Modifier.weight(1f))
             Text(
                 text = "₸$amount",
                 style = MaterialTheme.typography.displayLarge,
                 fontWeight = FontWeight.SemiBold
             )
-            Box( modifier = Modifier.fillMaxWidth()) {
+            Box(
+                modifier = Modifier.fillMaxWidth(),
+                contentAlignment = Alignment.Center
+            ) {
                 // This is the Text that acts as our placeholder
                 if (description.isBlank()) {
                     Text(
@@ -323,7 +331,8 @@ fun ExpenseScreen(
                     onValueChange = { description = it },
                     modifier = Modifier.fillMaxWidth(),
                     textStyle = MaterialTheme.typography.bodyMedium.copy(
-                        color = MaterialTheme.colorScheme.onSurface
+                        color = MaterialTheme.colorScheme.onSurface,
+                        textAlign = TextAlign.Center
                     ),
                     keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
                     keyboardActions = KeyboardActions(
