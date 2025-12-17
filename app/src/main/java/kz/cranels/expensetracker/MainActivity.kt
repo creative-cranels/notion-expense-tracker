@@ -24,6 +24,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Button
@@ -189,7 +190,7 @@ fun ExpenseScreen(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         TextButton(
-                            onClick = {},
+                            onClick = { showDatePicker = true },
                             shape = RoundedCornerShape(16.dp),
                             modifier = Modifier
                                 .weight(1f)
@@ -204,13 +205,14 @@ fun ExpenseScreen(
                                 dateFormatter.format(selectedDate),
                                 style = MaterialTheme.typography.bodyLarge
                             )
+                            Icon(Icons.Default.ArrowDropDown, contentDescription = null)
                         }
                         TextButton(
                             onClick = { /* Does nothing for now */ },
                             shape = RoundedCornerShape(16.dp), // Same shape as the date button
                             modifier = Modifier
                                 .weight(1f)
-                                .height(48.dp) // Same height
+                                .height(48.dp)
                                 .border(
                                     width = 1.dp,
                                     color = MaterialTheme.colorScheme.outline,
@@ -222,6 +224,7 @@ fun ExpenseScreen(
                                 selectedCategory?.name ?: "Category",
                                 style = MaterialTheme.typography.bodyLarge
                             )
+                            Icon(Icons.Default.ArrowDropDown, contentDescription = null)
                         }
                         IconButton(onClick = { navController.navigate("settings_screen") }) {
                             Icon(Icons.Filled.Settings, contentDescription = "Settings")
