@@ -324,6 +324,12 @@ fun ExpenseScreen(
                     modifier = Modifier.fillMaxWidth(),
                     textStyle = MaterialTheme.typography.bodyMedium.copy(
                         color = MaterialTheme.colorScheme.onSurface
+                    ),
+                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+                    keyboardActions = KeyboardActions(
+                        onDone = {
+                            focusManager.clearFocus()
+                        }
                     )
                 )
             }
