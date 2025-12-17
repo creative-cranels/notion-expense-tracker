@@ -13,6 +13,7 @@ retrofit = "3.0.0"
 moshi = "1.15.2"
 room = "2.8.4"
 lifecycle = "2.10.0"
+accompanistNavigationAnimation = "0.35.1-alpha"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -41,6 +42,7 @@ room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "room" }
 
 debug-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling" }
 debug-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }
+accompanist-navigation-animation = { group = "com.google.accompanist", name = "accompanist-navigation-animation", version.ref = "accompanistNavigationAnimation" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

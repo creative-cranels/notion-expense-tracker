@@ -78,6 +78,7 @@ dependencies {
     implementation(libs.retrofit)
     implementation(libs.converter.moshi)
     implementation(libs.moshi.kotlin)
+    implementation(libs.accompanist.navigation.animation)
     ksp(libs.moshi.codegen)
 
     // Database

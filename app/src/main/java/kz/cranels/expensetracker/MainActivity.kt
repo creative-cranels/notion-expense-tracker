@@ -9,6 +9,9 @@ import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -21,7 +24,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -63,6 +68,8 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.focus.FocusDirection
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight
@@ -77,6 +84,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import kotlinx.coroutines.flow.drop
+import kotlinx.coroutines.yield
 import kz.cranels.expensetracker.data.local.Category
 import kz.cranels.expensetracker.ui.theme.ExpenseTrackerTheme
 import kz.cranels.expensetracker.ui.theme.KeypadDelete
@@ -149,6 +157,7 @@ fun ExpenseScreen(
         factory = ExpenseViewModelFactory(LocalContext.current.applicationContext as Application)
     )
 ) {
+    val focusRequester = remember { FocusRequester() }
     val context = LocalContext.current
     val focusManager = LocalFocusManager.current
     val sharedPrefs = remember { context.getSharedPreferences("NotionPrefs", Application.MODE_PRIVATE) }
@@ -300,192 +309,220 @@ fun ExpenseScreen(
                 style = MaterialTheme.typography.displayLarge,
                 fontWeight = FontWeight.SemiBold
             )
-            Text(
-                text = "Add description...",
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.outline
-            )
+            Box( modifier = Modifier.fillMaxWidth()) {
+                // This is the Text that acts as our placeholder
+                if (description.isBlank()) {
+                    Text(
+                        text = "Add description...",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.outline // Use a subtle color
+                    )
+                }
+                BasicTextField(
+                    value = description,
+                    onValueChange = { description = it },
+                    modifier = Modifier.fillMaxWidth(),
+                    textStyle = MaterialTheme.typography.bodyMedium.copy(
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+                )
+            }
             // This pushes the keyboard to the bottom
             Spacer(modifier = Modifier.weight(1f))
 
-            // This is the container for our keyboard
-            Column(
-                modifier = Modifier.fillMaxWidth(),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
+            AnimatedVisibility(
+                visible = true,
+                enter = slideInVertically(initialOffsetY = { it }), // Slides in from the bottom
+                exit = slideOutVertically(targetOffsetY = { it })  // Slides out to the bottom
             ) {
-                // First row of keys
-                Row(
+                // This is the container for our keyboard
+                Column(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    Button(
-                        onClick = { onNumberPress("1") },
-                        modifier = Modifier
-                            .weight(1f)
-                            .height(80.dp),
-                        shape = RoundedCornerShape(24.dp),
-                        colors = ButtonDefaults.buttonColors(containerColor = KeypadNormal)
-                        ) {
-                        Text("1", style = MaterialTheme.typography.headlineMedium)
-                    }
-                    Button(
-                        onClick = { onNumberPress("2") },
-                        modifier = Modifier
-                            .weight(1f)
-                            .height(80.dp),
-                        shape = RoundedCornerShape(24.dp),
-                        colors = ButtonDefaults.buttonColors(containerColor = KeypadNormal)
-                    ) {
-                        Text("2", style = MaterialTheme.typography.headlineMedium)
-                    }
-                    Button(
-                        onClick = { onNumberPress("3") },
-                        modifier = Modifier
-                            .weight(1f)
-                            .height(80.dp),
-                        shape = RoundedCornerShape(24.dp),
-                        colors = ButtonDefaults.buttonColors(containerColor = KeypadNormal)
-                    ) {
-                        Text("3", style = MaterialTheme.typography.headlineMedium)
-                    }
-                    IconButton(
-                        onClick = { onBackspacePress() },
-                        modifier = Modifier
-                            .weight(1f)
-                            .height(80.dp),
-                        shape = RoundedCornerShape(24.dp),
-                        colors = IconButtonDefaults.iconButtonColors(containerColor = KeypadDelete, contentColor = KeypadDeleteContent),
-                    ) {
-                        Icon(Icons.AutoMirrored.Filled.Backspace, contentDescription = "Backspace")
-                    }
-                }
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    Button(
-                        onClick = { onNumberPress("4") },
-                        modifier = Modifier
-                            .weight(1f)
-                            .height(80.dp),
-                        shape = RoundedCornerShape(24.dp),
-                        colors = ButtonDefaults.buttonColors(containerColor = KeypadNormal)
-                    ) {
-                        Text("4", style = MaterialTheme.typography.headlineMedium)
-                    }
-                    Button(
-                        onClick = { onNumberPress("5") },
-                        modifier = Modifier
-                            .weight(1f)
-                            .height(80.dp),
-                        shape = RoundedCornerShape(24.dp),
-                        colors = ButtonDefaults.buttonColors(containerColor = KeypadNormal)
-                    ) {
-                        Text("5", style = MaterialTheme.typography.headlineMedium)
-                    }
-                    Button(
-                        onClick = { onNumberPress("6") },
-                        modifier = Modifier
-                            .weight(1f)
-                            .height(80.dp),
-                        shape = RoundedCornerShape(24.dp),
-                        colors = ButtonDefaults.buttonColors(containerColor = KeypadNormal)
-                    ) {
-                        Text("6", style = MaterialTheme.typography.headlineMedium)
-                    }
-                    IconButton(
-                        onClick = { showDatePicker = true },
-                        modifier = Modifier
-                            .weight(1f)
-                            .height(80.dp),
-                        shape = RoundedCornerShape(24.dp),
-                        colors = IconButtonDefaults.iconButtonColors(containerColor = KeypadSpecial, contentColor = KeypadSpecialContent) // <-- The correct defaults object
-                    ) {
-                        Icon(Icons.Default.DateRange, contentDescription = "DateRange")
-                    }
-                }
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    Column(
-                        modifier = Modifier.weight(3f), // Takes up 3/4 of the space
-                        verticalArrangement = Arrangement.spacedBy(8.dp)
-                    ) {
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.spacedBy(8.dp)
-                        ) {
-                            Button(
-                                onClick={ onNumberPress("7") },
-                                modifier=Modifier.weight(1f).height(80.dp),
-                                shape=RoundedCornerShape(24.dp),
-                                colors=ButtonDefaults.buttonColors(containerColor = KeypadNormal)){
-                                Text("7",style=MaterialTheme.typography.headlineMedium)
-                            }
-                            Button(
-                                onClick={ onNumberPress("8") },
-                                modifier=Modifier.weight(1f).height(80.dp),
-                                shape=RoundedCornerShape(24.dp),
-                                colors=ButtonDefaults.buttonColors(containerColor = KeypadNormal)){
-                                Text("8",style=MaterialTheme.typography.headlineMedium)
-                            }
-                            Button(
-                                onClick={ onNumberPress("9") },
-                                modifier=Modifier.weight(1f).height(80.dp),
-                                shape=RoundedCornerShape(24.dp),
-                                colors=ButtonDefaults.buttonColors(containerColor = KeypadNormal)){
-                                Text("9",style=MaterialTheme.typography.headlineMedium)
-                            }
-                        }
-                        // The new "0" button goes below
-                        Row( modifier = Modifier.fillMaxWidth() ) {
-                            Button(
-                                onClick={ onNumberPress("0") },
-                                modifier=Modifier.fillMaxWidth().height(80.dp),
-                                shape=RoundedCornerShape(24.dp),
-                                colors=ButtonDefaults.buttonColors(containerColor = KeypadNormal)){
-                                Text("0",style=MaterialTheme.typography.headlineMedium)
-                            }
-                        }
-                    }
-                    Button(
-                        onClick = {
-                            val token = sharedPrefs.getString("integration_secret", null)
-                            val dbId = sharedPrefs.getString("database_id", null)
-                            if (token == null || dbId == null) {
-                                Toast.makeText(context, "Please set credentials in settings", Toast.LENGTH_SHORT).show()
-                                return@Button
-                            }
-                            if (amount.isBlank() || description.isBlank()) {
-                                Toast.makeText(context, "Please enter amount and description", Toast.LENGTH_SHORT).show()
-                                return@Button
-                            }
-                            if (selectedCategory == null) {
-                                Toast.makeText(context, "Please select a category", Toast.LENGTH_SHORT).show()
-                                return@Button
-                            }
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
 
-                            viewModel.saveExpense(token, dbId, description, amount, selectedCategory!!.id, selectedDate) { success ->
-                                if (success) {
-                                    Toast.makeText(context, "Expense Saved!", Toast.LENGTH_SHORT).show()
-                                    amount = ""
-                                    description = ""
-                                    selectedCategory = null
-                                    selectedDate = Date()
-                                } else {
-                                    Toast.makeText(context, "Error saving expense", Toast.LENGTH_SHORT).show()
+                ) {
+                    // First row of keys
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        Button(
+                            onClick = { onNumberPress("1") },
+                            modifier = Modifier
+                                .weight(1f)
+                                .height(80.dp),
+                            shape = RoundedCornerShape(24.dp),
+                            colors = ButtonDefaults.buttonColors(containerColor = KeypadNormal)
+                        ) {
+                            Text("1", style = MaterialTheme.typography.headlineMedium)
+                        }
+                        Button(
+                            onClick = { onNumberPress("2") },
+                            modifier = Modifier
+                                .weight(1f)
+                                .height(80.dp),
+                            shape = RoundedCornerShape(24.dp),
+                            colors = ButtonDefaults.buttonColors(containerColor = KeypadNormal)
+                        ) {
+                            Text("2", style = MaterialTheme.typography.headlineMedium)
+                        }
+                        Button(
+                            onClick = { onNumberPress("3") },
+                            modifier = Modifier
+                                .weight(1f)
+                                .height(80.dp),
+                            shape = RoundedCornerShape(24.dp),
+                            colors = ButtonDefaults.buttonColors(containerColor = KeypadNormal)
+                        ) {
+                            Text("3", style = MaterialTheme.typography.headlineMedium)
+                        }
+                        IconButton(
+                            onClick = { onBackspacePress() },
+                            modifier = Modifier
+                                .weight(1f)
+                                .height(80.dp),
+                            shape = RoundedCornerShape(24.dp),
+                            colors = IconButtonDefaults.iconButtonColors(containerColor = KeypadDelete, contentColor = KeypadDeleteContent),
+                        ) {
+                            Icon(Icons.AutoMirrored.Filled.Backspace, contentDescription = "Backspace")
+                        }
+                    }
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        Button(
+                            onClick = { onNumberPress("4") },
+                            modifier = Modifier
+                                .weight(1f)
+                                .height(80.dp),
+                            shape = RoundedCornerShape(24.dp),
+                            colors = ButtonDefaults.buttonColors(containerColor = KeypadNormal)
+                        ) {
+                            Text("4", style = MaterialTheme.typography.headlineMedium)
+                        }
+                        Button(
+                            onClick = { onNumberPress("5") },
+                            modifier = Modifier
+                                .weight(1f)
+                                .height(80.dp),
+                            shape = RoundedCornerShape(24.dp),
+                            colors = ButtonDefaults.buttonColors(containerColor = KeypadNormal)
+                        ) {
+                            Text("5", style = MaterialTheme.typography.headlineMedium)
+                        }
+                        Button(
+                            onClick = { onNumberPress("6") },
+                            modifier = Modifier
+                                .weight(1f)
+                                .height(80.dp),
+                            shape = RoundedCornerShape(24.dp),
+                            colors = ButtonDefaults.buttonColors(containerColor = KeypadNormal)
+                        ) {
+                            Text("6", style = MaterialTheme.typography.headlineMedium)
+                        }
+                        IconButton(
+                            onClick = { showDatePicker = true },
+                            modifier = Modifier
+                                .weight(1f)
+                                .height(80.dp),
+                            shape = RoundedCornerShape(24.dp),
+                            colors = IconButtonDefaults.iconButtonColors(containerColor = KeypadSpecial, contentColor = KeypadSpecialContent) // <-- The correct defaults object
+                        ) {
+                            Icon(Icons.Default.DateRange, contentDescription = "DateRange")
+                        }
+                    }
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        Column(
+                            modifier = Modifier.weight(3f), // Takes up 3/4 of the space
+                            verticalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                            ) {
+                                Button(
+                                    onClick={ onNumberPress("7") },
+                                    modifier=Modifier
+                                        .weight(1f)
+                                        .height(80.dp),
+                                    shape=RoundedCornerShape(24.dp),
+                                    colors=ButtonDefaults.buttonColors(containerColor = KeypadNormal)){
+                                    Text("7",style=MaterialTheme.typography.headlineMedium)
+                                }
+                                Button(
+                                    onClick={ onNumberPress("8") },
+                                    modifier=Modifier
+                                        .weight(1f)
+                                        .height(80.dp),
+                                    shape=RoundedCornerShape(24.dp),
+                                    colors=ButtonDefaults.buttonColors(containerColor = KeypadNormal)){
+                                    Text("8",style=MaterialTheme.typography.headlineMedium)
+                                }
+                                Button(
+                                    onClick={ onNumberPress("9") },
+                                    modifier=Modifier
+                                        .weight(1f)
+                                        .height(80.dp),
+                                    shape=RoundedCornerShape(24.dp),
+                                    colors=ButtonDefaults.buttonColors(containerColor = KeypadNormal)){
+                                    Text("9",style=MaterialTheme.typography.headlineMedium)
                                 }
                             }
-                        },
-                        enabled = !isSaving,
-                        modifier = Modifier
-                            .weight(1f) // Takes up the last 1/4 of the space
-                            .height(168.dp), // Spans two rows (80dp + 8dp space + 80dp)
-                        shape = RoundedCornerShape(24.dp),
-                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
-                    ) {
-                        Icon(Icons.Default.Check, contentDescription = "Save")
+                            // The new "0" button goes below
+                            Row( modifier = Modifier.fillMaxWidth() ) {
+                                Button(
+                                    onClick={ onNumberPress("0") },
+                                    modifier=Modifier
+                                        .fillMaxWidth()
+                                        .height(80.dp),
+                                    shape=RoundedCornerShape(24.dp),
+                                    colors=ButtonDefaults.buttonColors(containerColor = KeypadNormal)){
+                                    Text("0",style=MaterialTheme.typography.headlineMedium)
+                                }
+                            }
+                        }
+                        Button(
+                            onClick = {
+                                val token = sharedPrefs.getString("integration_secret", null)
+                                val dbId = sharedPrefs.getString("database_id", null)
+                                if (token == null || dbId == null) {
+                                    Toast.makeText(context, "Please set credentials in settings", Toast.LENGTH_SHORT).show()
+                                    return@Button
+                                }
+                                if (amount.isBlank() || description.isBlank()) {
+                                    Toast.makeText(context, "Please enter amount and description", Toast.LENGTH_SHORT).show()
+                                    return@Button
+                                }
+                                if (selectedCategory == null) {
+                                    Toast.makeText(context, "Please select a category", Toast.LENGTH_SHORT).show()
+                                    return@Button
+                                }
+
+                                viewModel.saveExpense(token, dbId, description, amount, selectedCategory!!.id, selectedDate) { success ->
+                                    if (success) {
+                                        Toast.makeText(context, "Expense Saved!", Toast.LENGTH_SHORT).show()
+                                        amount = ""
+                                        description = ""
+                                        selectedCategory = null
+                                        selectedDate = Date()
+                                    } else {
+                                        Toast.makeText(context, "Error saving expense", Toast.LENGTH_SHORT).show()
+                                    }
+                                }
+                            },
+                            enabled = !isSaving,
+                            modifier = Modifier
+                                .weight(1f) // Takes up the last 1/4 of the space
+                                .height(168.dp), // Spans two rows (80dp + 8dp space + 80dp)
+                            shape = RoundedCornerShape(24.dp),
+                            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
+                        ) {
+                            Icon(Icons.Default.Check, contentDescription = "Save")
+                        }
                     }
                 }
             }
