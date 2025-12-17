@@ -207,24 +207,45 @@ fun ExpenseScreen(
                             )
                             Icon(Icons.Default.ArrowDropDown, contentDescription = null)
                         }
-                        TextButton(
-                            onClick = { /* Does nothing for now */ },
-                            shape = RoundedCornerShape(16.dp), // Same shape as the date button
-                            modifier = Modifier
-                                .weight(1f)
-                                .height(48.dp)
-                                .border(
-                                    width = 1.dp,
-                                    color = MaterialTheme.colorScheme.outline,
-                                    shape = RoundedCornerShape(16.dp)
-                                )
+                        ExposedDropdownMenuBox(
+                            expanded = isCategoryDropdownExpanded,
+                            onExpandedChange = { isCategoryDropdownExpanded = !it },
+                            modifier = Modifier.weight(1f)
                         ) {
-                            // We'll use the selectedCategory name, or "Category" as a default
-                            Text(
-                                selectedCategory?.name ?: "Category",
-                                style = MaterialTheme.typography.bodyLarge
-                            )
-                            Icon(Icons.Default.ArrowDropDown, contentDescription = null)
+                            TextButton(
+                                onClick = { isCategoryDropdownExpanded = !isCategoryDropdownExpanded },
+                                shape = RoundedCornerShape(16.dp), // Same shape as the date button
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(48.dp)
+                                    .border(
+                                        width = 1.dp,
+                                        color = MaterialTheme.colorScheme.outline,
+                                        shape = RoundedCornerShape(16.dp)
+                                    ).menuAnchor()
+                            ) {
+                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                    Text(
+                                        selectedCategory?.name ?: "Category",
+                                        style = MaterialTheme.typography.bodyLarge
+                                    )
+                                    Icon(Icons.Default.ArrowDropDown, contentDescription = null)
+                                }
+                            }
+                            ExposedDropdownMenu(
+                                expanded = isCategoryDropdownExpanded,
+                                onDismissRequest = { isCategoryDropdownExpanded = false }
+                            ) {
+                                categories.forEach { category ->
+                                    DropdownMenuItem(
+                                        text = { Text(category.name) },
+                                        onClick = {
+                                            selectedCategory = category
+                                            isCategoryDropdownExpanded = false
+                                        }
+                                    )
+                                }
+                            }
                         }
                         IconButton(onClick = { navController.navigate("settings_screen") }) {
                             Icon(Icons.Filled.Settings, contentDescription = "Settings")
@@ -306,60 +327,6 @@ fun ExpenseScreen(
                 keyboardActions = KeyboardActions(onNext = { focusManager.moveFocus(FocusDirection.Down) }),
                 modifier = Modifier.fillMaxWidth()
             )
-
-            Box {
-                OutlinedTextField(
-                    value = dateFormatter.format(selectedDate),
-                    onValueChange = {},
-                    label = { Text("Date") },
-                    enabled = false,
-                    trailingIcon = { Icon(Icons.Default.DateRange, contentDescription = "Select Date") },
-                    colors = OutlinedTextFieldDefaults.colors(
-                        disabledTextColor = MaterialTheme.colorScheme.onSurface,
-                        disabledBorderColor = if (isSaving) MaterialTheme.colorScheme.outline.copy(alpha = 0.5f) else MaterialTheme.colorScheme.outline,
-                        disabledLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                        disabledTrailingIconColor = MaterialTheme.colorScheme.onSurfaceVariant
-                    ),
-                    modifier = Modifier.fillMaxWidth()
-                )
-                Box(
-                    modifier = Modifier
-                        .matchParentSize()
-                        .alpha(0f)
-                        .clickable(enabled = !isSaving) { showDatePicker = true }
-                )
-            }
-
-            ExposedDropdownMenuBox(
-                expanded = isCategoryDropdownExpanded,
-                onExpandedChange = { if (!isSaving) isCategoryDropdownExpanded = !isCategoryDropdownExpanded }
-            ) {
-                OutlinedTextField(
-                    value = selectedCategory?.name ?: "",
-                    onValueChange = {},
-                    readOnly = true,
-                    enabled = !isSaving,
-                    label = { Text("Category") },
-                    trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = isCategoryDropdownExpanded) },
-                    modifier = Modifier
-                        .menuAnchor()
-                        .fillMaxWidth()
-                )
-                ExposedDropdownMenu(
-                    expanded = isCategoryDropdownExpanded,
-                    onDismissRequest = { isCategoryDropdownExpanded = false }
-                ) {
-                    categories.forEach { category ->
-                        DropdownMenuItem(
-                            text = { Text(category.name) },
-                            onClick = {
-                                selectedCategory = category
-                                isCategoryDropdownExpanded = false
-                            }
-                        )
-                    }
-                }
-            }
         }
     }
 }
