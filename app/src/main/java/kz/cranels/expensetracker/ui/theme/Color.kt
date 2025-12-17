@@ -2,6 +2,14 @@ package kz.cranels.expensetracker.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
+// Add these new colors for the keyboard
+val KeypadNormal = Color(0xFF00BCD4)      // A light, visible gray for number keys
+val KeypadDelete = Color(0xFFFEE4E2)      // A light, reddish pink for the backspace key
+val KeypadSpecial = Color(0xFFE0F2FE)     // A light, blueish color for the date picker
+val KeypadDeleteContent = Color(0xFFD92D20) // A darker red for the backspace icon
+val KeypadSpecialContent = Color(0xFF026AA2)// A darker blue for the date picker icon
+
+
 // Custom Color Palette
 val CustomPrimaryTeal = Color(0xFF70A288)
 val CustomBackgroundWhite = Color(0xFFFFFFFF)

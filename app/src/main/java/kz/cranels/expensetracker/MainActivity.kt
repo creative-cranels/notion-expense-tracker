@@ -79,6 +79,11 @@ import androidx.navigation.compose.rememberNavController
 import kotlinx.coroutines.flow.drop
 import kz.cranels.expensetracker.data.local.Category
 import kz.cranels.expensetracker.ui.theme.ExpenseTrackerTheme
+import kz.cranels.expensetracker.ui.theme.KeypadDelete
+import kz.cranels.expensetracker.ui.theme.KeypadDeleteContent
+import kz.cranels.expensetracker.ui.theme.KeypadNormal
+import kz.cranels.expensetracker.ui.theme.KeypadSpecial
+import kz.cranels.expensetracker.ui.theme.KeypadSpecialContent
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -185,6 +190,27 @@ fun ExpenseScreen(
         }
     }
 
+    fun onNumberPress(number: String) {
+        // If the amount is currently "0", replace it with the new number.
+        // Otherwise, append the new number.
+        if (amount == "0") {
+            amount = number
+        } else {
+            amount += number
+        }
+    }
+
+    fun onBackspacePress() {
+        // If the amount string has more than one character, remove the last one.
+        if (amount.length > 1) {
+            amount = amount.dropLast(1)
+        }
+        // If it only has one character, reset it to "0" instead of making it empty.
+        else {
+            amount = "0"
+        }
+    }
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -270,7 +296,7 @@ fun ExpenseScreen(
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             Text(
-                text = "₸0",
+                text = "₸$amount",
                 style = MaterialTheme.typography.displayLarge,
                 fontWeight = FontWeight.SemiBold
             )
@@ -293,42 +319,42 @@ fun ExpenseScreen(
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     Button(
-                        onClick = { /* No-op */ },
+                        onClick = { onNumberPress("1") },
                         modifier = Modifier
                             .weight(1f)
                             .height(80.dp),
                         shape = RoundedCornerShape(24.dp),
-                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
+                        colors = ButtonDefaults.buttonColors(containerColor = KeypadNormal)
                         ) {
                         Text("1", style = MaterialTheme.typography.headlineMedium)
                     }
                     Button(
-                        onClick = { /* No-op */ },
+                        onClick = { onNumberPress("2") },
                         modifier = Modifier
                             .weight(1f)
                             .height(80.dp),
                         shape = RoundedCornerShape(24.dp),
-                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
+                        colors = ButtonDefaults.buttonColors(containerColor = KeypadNormal)
                     ) {
                         Text("2", style = MaterialTheme.typography.headlineMedium)
                     }
                     Button(
-                        onClick = { /* No-op */ },
+                        onClick = { onNumberPress("3") },
                         modifier = Modifier
                             .weight(1f)
                             .height(80.dp),
                         shape = RoundedCornerShape(24.dp),
-                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
+                        colors = ButtonDefaults.buttonColors(containerColor = KeypadNormal)
                     ) {
                         Text("3", style = MaterialTheme.typography.headlineMedium)
                     }
                     IconButton(
-                        onClick = { /* No-op */ },
+                        onClick = { onBackspacePress() },
                         modifier = Modifier
                             .weight(1f)
                             .height(80.dp),
                         shape = RoundedCornerShape(24.dp),
-                        colors = IconButtonDefaults.iconButtonColors(containerColor = MaterialTheme.colorScheme.surfaceVariant) // <-- The correct defaults object
+                        colors = IconButtonDefaults.iconButtonColors(containerColor = KeypadDelete, contentColor = KeypadDeleteContent),
                     ) {
                         Icon(Icons.AutoMirrored.Filled.Backspace, contentDescription = "Backspace")
                     }
@@ -338,42 +364,42 @@ fun ExpenseScreen(
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     Button(
-                        onClick = { /* No-op */ },
+                        onClick = { onNumberPress("4") },
                         modifier = Modifier
                             .weight(1f)
                             .height(80.dp),
                         shape = RoundedCornerShape(24.dp),
-                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
+                        colors = ButtonDefaults.buttonColors(containerColor = KeypadNormal)
                     ) {
                         Text("4", style = MaterialTheme.typography.headlineMedium)
                     }
                     Button(
-                        onClick = { /* No-op */ },
+                        onClick = { onNumberPress("5") },
                         modifier = Modifier
                             .weight(1f)
                             .height(80.dp),
                         shape = RoundedCornerShape(24.dp),
-                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
+                        colors = ButtonDefaults.buttonColors(containerColor = KeypadNormal)
                     ) {
                         Text("5", style = MaterialTheme.typography.headlineMedium)
                     }
                     Button(
-                        onClick = { /* No-op */ },
+                        onClick = { onNumberPress("6") },
                         modifier = Modifier
                             .weight(1f)
                             .height(80.dp),
                         shape = RoundedCornerShape(24.dp),
-                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
+                        colors = ButtonDefaults.buttonColors(containerColor = KeypadNormal)
                     ) {
                         Text("6", style = MaterialTheme.typography.headlineMedium)
                     }
                     IconButton(
-                        onClick = { /* No-op */ },
+                        onClick = { showDatePicker = true },
                         modifier = Modifier
                             .weight(1f)
                             .height(80.dp),
                         shape = RoundedCornerShape(24.dp),
-                        colors = IconButtonDefaults.iconButtonColors(containerColor = MaterialTheme.colorScheme.surfaceVariant) // <-- The correct defaults object
+                        colors = IconButtonDefaults.iconButtonColors(containerColor = KeypadSpecial, contentColor = KeypadSpecialContent) // <-- The correct defaults object
                     ) {
                         Icon(Icons.Default.DateRange, contentDescription = "DateRange")
                     }
@@ -390,21 +416,37 @@ fun ExpenseScreen(
                             modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.spacedBy(8.dp)
                         ) {
-                            Button(onClick={/*No-op*/},modifier=Modifier
-                                .weight(1f)
-                                .height(80.dp),shape=RoundedCornerShape(24.dp),colors=ButtonDefaults.buttonColors(containerColor=MaterialTheme.colorScheme.surfaceVariant)){Text("7",style=MaterialTheme.typography.headlineMedium)}
-                            Button(onClick={/*No-op*/},modifier=Modifier
-                                .weight(1f)
-                                .height(80.dp),shape=RoundedCornerShape(24.dp),colors=ButtonDefaults.buttonColors(containerColor=MaterialTheme.colorScheme.surfaceVariant)){Text("8",style=MaterialTheme.typography.headlineMedium)}
-                            Button(onClick={/*No-op*/},modifier=Modifier
-                                .weight(1f)
-                                .height(80.dp),shape=RoundedCornerShape(24.dp),colors=ButtonDefaults.buttonColors(containerColor=MaterialTheme.colorScheme.surfaceVariant)){Text("9",style=MaterialTheme.typography.headlineMedium)}
+                            Button(
+                                onClick={ onNumberPress("7") },
+                                modifier=Modifier.weight(1f).height(80.dp),
+                                shape=RoundedCornerShape(24.dp),
+                                colors=ButtonDefaults.buttonColors(containerColor = KeypadNormal)){
+                                Text("7",style=MaterialTheme.typography.headlineMedium)
+                            }
+                            Button(
+                                onClick={ onNumberPress("8") },
+                                modifier=Modifier.weight(1f).height(80.dp),
+                                shape=RoundedCornerShape(24.dp),
+                                colors=ButtonDefaults.buttonColors(containerColor = KeypadNormal)){
+                                Text("8",style=MaterialTheme.typography.headlineMedium)
+                            }
+                            Button(
+                                onClick={ onNumberPress("9") },
+                                modifier=Modifier.weight(1f).height(80.dp),
+                                shape=RoundedCornerShape(24.dp),
+                                colors=ButtonDefaults.buttonColors(containerColor = KeypadNormal)){
+                                Text("9",style=MaterialTheme.typography.headlineMedium)
+                            }
                         }
                         // The new "0" button goes below
                         Row( modifier = Modifier.fillMaxWidth() ) {
-                            Button(onClick={/*No-op*/},modifier=Modifier
-                                .fillMaxWidth()
-                                .height(80.dp),shape=RoundedCornerShape(24.dp),colors=ButtonDefaults.buttonColors(containerColor=MaterialTheme.colorScheme.surfaceVariant)){Text("0",style=MaterialTheme.typography.headlineMedium)}
+                            Button(
+                                onClick={ onNumberPress("0") },
+                                modifier=Modifier.fillMaxWidth().height(80.dp),
+                                shape=RoundedCornerShape(24.dp),
+                                colors=ButtonDefaults.buttonColors(containerColor = KeypadNormal)){
+                                Text("0",style=MaterialTheme.typography.headlineMedium)
+                            }
                         }
                     }
                     Button(
